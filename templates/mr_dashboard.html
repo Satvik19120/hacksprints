@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MR Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+    <style>
+        /* General Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #4CAF50; /* Highlight row on hover */
+        }
+
+        a {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+
+        /* Navigation styles */
+        .navigation {
+            background-color: #4CAF50; /* Green background */
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navigation a {
+            margin-right: 15px;
+            color: white; /* White text */
+            text-decoration: none;
+            font-weight: bold; /* Stronger text */
+        }
+
+        .navigation a:hover {
+            color: yellowgreen; /* Yellow-green on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome, {{ user.name }}</h1>
+        <h2><a href="{{ url_for('logout') }}">Logout</a></h2>
+    </header>
+
+    <!-- Navigation Menu -->
+    <div class="navigation">
+        <a href="#sevabhav-servings">Sevabhav Servings</a>
+        <a href="#messages-from-doctors">Messages from Doctors</a>
+        <a href="#messages-to-doctors">Messages Sent to Doctors</a>
+        <a href="#manage-medicines">Manage Medicines</a>
+        <a href="dashboard">Dashboard</a>
+    </div>
+
+    <br>
+    <hr>
+    <br>
+
+    <!-- Sevabhav Servings Section -->
+    <section id="sevabhav-servings">
+        <h2>Your Sevabhav Servings</h2>
+        <h2><a href="{{ url_for('view_assistance_requests') }}">Donate Medicine As a Sevabhav Member</a></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Medicine</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                {% if request.status != 'Rejected' %}
+                    <tr>
+                        <td>{{ request.patient_name }}</td>
+                        <td>{{ request.medicine.name }}</td>
+                        <td>Dr. {{ request.doctor.name }}</td>
+                        <td>{{ request.status }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">N/A</td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Messages from Doctors Section -->
+    <section id="messages-from-doctors">
+        <h2>Messages From Doctors</h2>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                {% if message.recipient_id == user.id %}
+                    <li>
+                        <strong>From:</strong> Dr. {{ message.sender.name }} <br>
+                        <strong>Content:</strong> {{ message.content }} <br>
+                        <strong>Time:</strong> {{ message.timestamp }}
+                    </li>
+                    <br>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No messages received yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Messages Sent to Doctors Section -->
+    <section id="messages-to-doctors">
+        <h2>Messages Sent to Doctors</h2>
+        <h2><a href="{{ url_for('send_message') }}">Send Message</a></h2>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                {% if message.sender_id == user.id %}
+                    <li>
+                        <strong>To:</strong> Dr. {{ message.recipient.name }} <br>
+                        <strong>Content:</strong> {{ message.content }} <br>
+                        <strong>Time:</strong> {{ message.timestamp }}
+                    </li>
+                    <br>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No messages sent yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Manage Medicines Section -->
+    <section id="manage-medicines">
+        <h2>Manage Medicines</h2>
+        <h2><a href="{{ url_for('add_medicine') }}">Add Medicine</a></h2>
+        {% if medicines %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>Alternative</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in medicines %}
+                        <tr>
+                            <td>{{ medicine.name }}</td>
+                            <td>{{ medicine.stock }}</td>
+                            <td>{{ medicine.price }}</td>
+                            <td>{{ medicine.alternative }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No medicines available.</p>
+        {% endif %}
+    </section>
+
+    <br>
+    <hr>
+    <footer>
+        <br>
+        <h3 style="margin: 20px; text-align-last: center;">Smile You are a Sevabhav Member</h3>
+        <br>
+    </footer>
+</body>
+</html>

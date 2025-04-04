@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prescribe Medicine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        section {
+            width:90%;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            width:80%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        textarea,select,option,input[type="number"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            font-size: 16px;
+        }
+
+        button {
+            min-width: 300px;
+            align-self: center;
+            text-align: center;
+            background-color:green;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+            
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome, Dr. {{ user.name }}</h1>
+        <h2><a href="{{ url_for('dashboard') }}">Back to dashboard</a></h2>
+    </header>
+    <br>
+    <hr>
+    <br>
+    <section>
+        <h2>Prescribe Medicine for Appointment</h2>
+        <form method="POST" action="{{ url_for('prescribe_medicine', appointment_id=appointment.id) }}">
+            <label for="medicine_id">Select Medicine:</label>
+            <select name="medicine_id" required>
+                <option value="" disabled selected>Select Medicine</option>
+                {% for medicine in medicines %}
+                    <option value="{{ medicine.id }}">{{ medicine.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="dosage">Dosage:</label>
+            <input type="text" name="dosage" placeholder="e.g., 1 tablet twice a day" required>
+
+            <label for="duration">Duration:</label>
+            <input type="text" name="duration" placeholder="e.g., 5 days, 2 weeks" required>
+
+            <button type="submit">Submit Prescription</button>
+        </form>
+    </section>
+    <br>
+    
+    <footer>
+        
+        
+        <h3 style="margin: 20px; text-align-last: center;"> Smile You   are   a   Sevabhav   Member</h3>
+        <br>
+    </footer>
+</body>
+</html>

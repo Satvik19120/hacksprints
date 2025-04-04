@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #4CAF50;
+        }
+
+        a {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+
+        /* Navigation styles */
+        .navigation {
+            background-color: #4CAF50; /* Green background */
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navigation a {
+            margin-right: 15px;
+            color: white; /* White text */
+            text-decoration: none;
+            font-weight: bold; /* Stronger text */
+        }
+
+        .navigation a:hover {
+            color: yellowgreen; /* Yellow-green on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome, Dr. {{ user.name }}</h1>
+        <h2><a href="{{ url_for('logout') }}">Logout</a></h2>
+    </header>
+
+    <!-- Navigation Menu -->
+    <div class="navigation">
+        <a href="#appointments">Appointment Requests</a>
+        <a href="#patients-list">Patients List</a>
+        <a href="#assistance-requests">Assistance Requests</a>
+        <a href="#messages-from-mrs">Messages from MRs</a>
+        <a href="#messages-to-mrs">Messages Sent to MRs</a>
+        <a href="#available-medicines">Available Medicines</a>
+        <a href="dashboard">Dashboard</a>
+    </div>
+
+    <br>
+    <hr>
+    <br>
+
+    <!-- Appointment Requests Section -->
+    <section id="appointments">
+        <h2>Appointment Requests</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Appointment ID</th>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.id }}</td>
+                    <td>{{ appointment.patient_id }}</td>
+                    <td>{{ appointment.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ appointment.status }}</td>
+                    <td>
+                        {% if appointment.status == 'Pending' %}
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                <button type="submit" name="action" value="Approve">Approve</button>
+                                <button type="submit" name="action" value="Reject">Reject</button>
+                            </form>
+                        {% elif appointment.status == 'Completed' %}
+                            <p>Completed</p>
+                        {% elif appointment.status == 'Confirmed' %}
+                            <form method="POST" action="{{ url_for('prescribe_medicine', appointment_id=appointment.id) }}" style="display: inline;">
+                                <button type="submit">Prescribe Medicine</button>
+                            </form>
+                        {% elif appointment.status == 'Rejected' %}
+                            <p>Unavailable</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+    </section>
+
+    <!-- Patients List Section -->
+    <section id="patients-list">
+        <h2>Patients List</h2>
+        <ul>
+            {% for appointment in appointments %}
+                {% if appointment.status != 'Rejected' %}
+                <li>{{ appointment.patient_id }} -> {{ appointment.date }}  -> {{ appointment.status }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- Assistance Requests Section -->
+    <section id="assistance-requests">
+        <h2><a href="{{ url_for('create_assistance_request') }}">Create Assistance Request</a></h2>
+        <h2>My Created Assistance Requests For Financially Weaker Patients</h2>
+        {% if assistance_requests %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Medicine</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in assistance_requests %}
+                <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.medicine.name }}</td>
+                    <td>Dr. {{ request.doctor.name }}</td>
+                    <td>{{ request.status }}</td>
+                    <td>{{ request.reason or 'N/A' }}</td>
+                    <td>{{ request.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No assistance requests found.</p>
+        {% endif %}
+    </section>
+
+    <!-- Messages from MRs Section -->
+    <section id="messages-from-mrs">
+        <h2>Messages from MRs</h2>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                {% if message.recipient_id == user.id %}
+                    <li>
+                        <strong>From:</strong> {{ message.sender.name }} <br>
+                        <strong>Content:</strong> {{ message.content }} <br>
+                        <strong>Time:</strong> {{ message.timestamp }}
+                    </li>
+                    <br>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No messages received yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Messages Sent to MRs Section -->
+    <section id="messages-to-mrs">
+        <h2>Messages Sent to MRs</h2>
+        <h2><a href="{{ url_for('send_message') }}">Send Message</a></h2>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                {% if message.sender_id == user.id %}
+                    <li>
+                        <strong>To:</strong> {{ message.recipient.name }} <br>
+                        <strong>Content:</strong> {{ message.content }} <br>
+                        <strong>Time:</strong> {{ message.timestamp }}
+                    </li>
+                    <br>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No messages sent yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Available Medicines Section -->
+    <section id="available-medicines">
+        <h2>Available Medicines</h2>
+        {% if medicines %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Alternative</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.stock }}</td>
+                    <td>{{ medicine.price }}</td>
+                    <td>{{ medicine.alternative }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No medicines available.</p>
+        {% endif %}
+    </section>
+
+    <br>
+    <hr>
+    <footer>
+        <br>
+        <h3 style="margin: 20px; text-align-last: center;">Smile You are a Sevabhav Member</h3>
+        <br>
+    </footer>
+</body>
+</html>

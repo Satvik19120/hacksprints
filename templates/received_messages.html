@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Received Messages</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Received Messages</h1>
+        <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    </header>
+    <br>
+    <hr>
+    <br>
+    <section>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>
+                        <strong>From:</strong> {{ message.sender.name }} <br>
+                        <strong>Content:</strong> {{ message.content }} <br>
+                        <strong>Time:</strong> {{ message.timestamp }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No messages received yet.</p>
+        {% endif %}
+    </section>
+    <br>
+    <hr>
+    <footer>
+        
+        <br>
+        <h3 style="margin: 20px; text-align-last: center;"> Smile You   are   a   Sevabhav   Member</h3>
+        <br>
+    </footer>
+</body>
+</html>

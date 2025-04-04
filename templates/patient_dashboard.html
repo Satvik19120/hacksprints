@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #4CAF50;
+        }
+
+        a {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+
+        /* Add styles for navigation menu */
+        .navigation {
+            background-color: #4CAF50; /* Green background */
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navigation a {
+            margin-right: 15px;
+            color: white; /* White text */
+            text-decoration: none;
+            font-weight: bold; /* Stronger text */
+        }
+
+        .navigation a:hover {
+            color: yellowgreen; /* Change to yellowgreen on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome, {{ session['user_name'] }}</h1>
+        <h2><a href="{{ url_for('logout') }}">Logout</a></h2>
+    </header>
+
+    <!-- Navigation Menu -->
+    <div class="navigation">
+        <a href="#book-appointment">Book Appointment</a>
+        <a href="#appointments">Your Appointments</a>
+        <a href="#assistance-requests">My Assistance Requests</a>
+        <a href="dashboard">Dashboard</a>
+    </div>
+
+    <br>
+    <hr>
+    <br>
+    <br>
+    <!-- Book Appointment Section -->
+    <section id="book-appointment">
+        <h3>Book a New Appointment</h3>
+        <a href="{{ url_for('book_appointment') }}" style="display: inline-block; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Book Appointment</a>
+    </section>
+
+    <br>
+    <hr>
+    
+    <!-- Appointments Section -->
+    <section id="appointments">
+        <h2>Your Appointments</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Appointment ID</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Prescription</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.id }}</td>
+                    {% for doctor in doctors %}
+                    {% if doctor.id == appointment.doctor_id %}
+                    <td>{{ doctor.name }}</td>
+                    {% endif %}
+                    {% endfor %}
+                    <td>{{ appointment.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ appointment.status }}</td>
+                    <td>
+                        {% if appointment.prescription %}
+                            <ul>
+                                {% for medicine in medicines %}
+                                {% if medicine.id == appointment.prescription.medicine_id %}
+                                <li>Medicine: {{ medicine.name }}</li>
+                                {% endif %}
+                                {% endfor %}
+                                <li>Dosage: {{ appointment.prescription.dosage }}</li>
+                                <li>Duration: {{ appointment.prescription.duration }}</li>
+                            </ul>
+                        {% elif appointment.status == 'Confirmed' %}
+                            <p>Wait for your appointment time. It's confirmed.</p>
+                        {% else %}
+                            <p>---------</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <br>
+    <hr>
+
+    <!-- Assistance Requests Section -->
+    <section id="assistance-requests">
+        <h2>My Assistance Requests</h2>
+
+        {% if assistance_requests %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Medicine</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in assistance_requests %}
+                <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.medicine.name }}</td>
+                    <td>Dr. {{ request.doctor.name }}</td>
+                    <td>{{ request.status }}</td>
+                    <td>{{ request.reason or 'N/A' }}</td>
+                    <td>{{ request.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No assistance requests found.</p>
+        {% endif %}
+    </section>
+
+    <br>
+    <hr>
+
+    <footer>
+        <br>
+        <h3 style="margin: 20px; text-align-last: center;">Smile You are a Sevabhav Member</h3>
+        <br>
+    </footer>
+</body>
+</html>

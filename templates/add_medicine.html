@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Medicine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        section {
+            width:95%;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            font-size: 16px;
+        }
+
+        button {
+            min-width: 300px;
+            align-self: center;
+            text-align: center;
+            background-color:green;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+            
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Add Medicine</h1>
+        <h2><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></h2>
+    </header>
+
+    <hr>
+
+    <section>
+        <form method="POST">
+            <label for="name">Medicine Name:</label>
+            <input type="text" name="name" placeholder="Enter medicine name" required>
+
+            <label for="stock">Stock:</label>
+            <input type="number" name="stock" placeholder="Enter available stock" required>
+
+            <label for="price">Price:</label>
+            <input type="number" step="0.01" name="price" placeholder="Enter price per unit" required>
+
+            <label for="alternative">Alternative:</label>
+            <input type="text" name="alternative" placeholder="Enter alternative medicine (optional)">
+
+            <button type="submit">Add Medicine</button>
+        </form>
+    </section>
+
+    <footer>
+        <h3>Smile! You are a Sevabhav Member</h3>
+    </footer>
+</body>
+</html>

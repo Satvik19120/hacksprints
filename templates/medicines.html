@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Available Medicines</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home_style.css') }}">
+</head>
+<h2>
+    <header>
+        <h1>Available Medicines</h1>
+        <h2><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></header></h2>
+    </header>
+    <br>
+    <hr>
+    <br>
+    <section>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Alternative</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.stock }}</td>
+                    <td>{{ medicine.price }}</td>
+                    <td>{{ medicine.alternative }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </section>
+    <br>
+    <hr>
+    <footer>
+        
+        <br>
+        <h3 style="margin: 20px; text-align-last: center;"> Smile You   are   a   Sevabhav   Member</h3>
+        <br>
+    </footer>
+</body>
+</html>
